@@ -1,6 +1,6 @@
 streamlit
 pandas
-opencv-python-headless
-fpdf2
 pillow
-numpy
+requests
+python-whois
+tldextract
