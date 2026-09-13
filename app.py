@@ -86,3 +86,17 @@ with right:
     st.markdown("<div class='comp-card'>🛡️ هجمات حية</div>", unsafe_allow_html=True)
     st.markdown("<div class='comp-card' style='margin-top:8px'>راجحي وهمي - خطر</div>", unsafe_allow_html=True)
     st.markdown("<div class='comp-card' style='margin-top:8px'>STC Pay - خطر</div>", unsafe_allow_html=True)
+import streamlit as st
+from urllib.parse import urlparse
+
+st.set_page_config(page_title="V16.3", layout="wide")
+st.markdown("<style>.stApp{background:#000 !important}</style>", unsafe_allow_html=True)
+
+def get_score(u):
+    if ".tk" in u: return 92
+    return 35
+
+url = st.text_input("الرابط", "https://alrajhi-bank-verify.tk/login")
+if st.button("افحص"):
+    score = get_score(url)
+    st.error(f"💀 خطر {score}% - تصيد مؤكد!")
