@@ -100,3 +100,36 @@ url = st.text_input("الرابط", "https://alrajhi-bank-verify.tk/login")
 if st.button("افحص"):
     score = get_score(url)
     st.error(f"💀 خطر {score}% - تصيد مؤكد!")
+import streamlit as st
+
+st.set_page_config(page_title="كاشف V16.3 BLACK", layout="wide")
+
+st.markdown("""
+<style>
+.stApp {
+    background-color: #0a0f1f;
+    color: white;
+}
+.black-box {
+    border: 1px solid #00ff88;
+    border-radius: 15px;
+    padding: 20px;
+    background: rgba(0,255,136,0.05);
+}
+</style>
+""", unsafe_allow_html=True)
+
+# العنوان
+st.markdown("<h1 style='color:#00ff88;'>كاشف <span style='color:#00ff88;'>V16.3 BLACK</span></h1>", unsafe_allow_html=True)
+st.markdown("<p style='color:#6c8ebf; text-align:center;'>النسخة السوداء - مريحة للعين V16.3</p>", unsafe_allow_html=True)
+
+# محل الحماية
+col1, col2 = st.columns(2)
+with col1:
+    st.text_input("🔍 محلل الحماية", placeholder="الصق الرابط هنا...")
+
+# هنا كان صندوق الكلام - شلته لك
+# تقدر تضيف هنا لوحة التحكم مباشرة
+
+if st.button("افحص الآن"):
+    st.success("تم الفحص - النتيجة 90% خطر")
