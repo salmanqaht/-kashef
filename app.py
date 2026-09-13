@@ -32,7 +32,8 @@ input { background: rgba(255,255,255,0.08)!important; color:white!important; bor
 </style>
 """, unsafe_allow_html=True)
 
-def check(u):
+if any(x in d for x in [".tk",".ml"...]): s+=55
+  
     s=0
     if not u.startswith("http"): u="https://"+u
     d=urlparse(u).netloc.lower()
