@@ -1,99 +1,55 @@
 import streamlit as st
+st.set_page_config(page_title="كاشف V10 Final", page_icon="🛡️", layout="centered")
+st.markdown("""
+<style>
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"]{background:#0B1220!important; background-color:#0B1220!important}
+h1,h2,h3,p,span,label{color:white!important}
+.card{background:#151E32; border:1px solid #2A3A5C; border-radius:16px; padding:14px; margin:6px 0; text-align:center}
+textarea{background:#0f172a!important; color:white!important; border:1px solid #334155!important; border-radius:12px!important}
+div.stButton>button{background:#22c55e!important; color:white!important; height:56px; width:100%; font-weight:900; border-radius:12px; font-size:19px; border:none}
+</style>
+""", unsafe_allow_html=True)
 import re
 from urllib.parse import urlparse
 import requests
 from datetime import datetime
 
-st.set_page_config(page_title="كاشف V9 Ultimate", page_icon="🛡️", layout="centered")
+st.markdown("<h1 style='text-align:center'>🛡️ كاشف V10 Final</h1>")
+st.markdown("<p style='text-align:center; color:#94a3b8'>Black Edition - جاهز للمسابقة</p>")
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap');
-html, body, [class*="css"] {font-family:'Tajawal',sans-serif;}
-.stApp {background:#0B1220 !important;}
-h1 {color:white!important; text-align:center; font-weight:900; font-size:38px;}
-.sub {color:#64748b!important; text-align:center; margin-bottom:20px;}
-.card-dark {background:#151E32; border:1px solid #1E2A44; border-radius:16px; padding:16px; margin:10px 0;}
-.card-white {background:white; border-radius:16px; padding:20px; margin:12px 0;}
-.stTextArea textarea, .stTextInput input {background:#0f172a!important; color:#e2e8f0!important; border:1px solid #1E2A44!important; border-radius:12px!important; direction:ltr; text-align:left;}
-div.stButton > button {background:linear-gradient(90deg, #22c55e, #16a34a); color:white; border:none; border-radius:12px; height:56px; width:100%; font-weight:900; font-size:18px;}
-</style>
-""", unsafe_allow_html=True)
+if "hist" not in st.session_state: st.session_state.hist=[]
 
-st.markdown('<h1>🛡️ كاشف V9 Ultimate</h1>', unsafe_allow_html=True)
-st.markdown('<div class="sub">Black Edition - يفحص الروابط والرسائل والصور | جاهز للمسابقة</div>', unsafe_allow_html=True)
+a,b,c=st.columns(3)
+a.markdown('<div class="card"><b style="color:#22c55e; font-size:22px">V10</b><br><span style="font-size:10px; color:#64748b">FINAL BLACK</span></div>', unsafe_allow_html=True)
+b.markdown('<div class="card"><b style="color:white; font-size:22px">10+</b><br><span style="font-size:10px; color:#64748b">محركات</span></div>', unsafe_allow_html=True)
+c.markdown(f'<div class="card"><b style="color:#38bdf8; font-size:22px">{len(st.session_state.hist)}</b><br><span style="font-size:10px; color:#64748b">سجل</span></div>', unsafe_allow_html=True)
 
-# Session for history
-if "history" not in st.session_state: st.session_state.history=[]
+txt=st.text_area("الصق رابط أو رسالة", placeholder="https://alrajhi-bank-verify.tk/login", height=100)
 
-c1,c2,c3 = st.columns(3)
-c1.markdown('<div class="card-dark" style="text-align:center"><div style="color:#22c55e; font-size:24px; font-weight:900">V9</div><div style="color:#64748b; font-size:10px">BLACK EDITION</div></div>', unsafe_allow_html=True)
-c2.markdown('<div class="card-dark" style="text-align:center"><div style="color:white; font-size:24px; font-weight:900">9+</div><div style="color:#64748b; font-size:10px">محرك فحص</div></div>', unsafe_allow_html=True)
-c3.markdown(f'<div class="card-dark" style="text-align:center"><div style="color:#38bdf8; font-size:24px; font-weight:900">{len(st.session_state.history)}</div><div style="color:#64748b; font-size:10px">فحص محفوظ</div></div>', unsafe_allow_html=True)
+def check(u):
+    s=0; logs=[]
+    if not u.startswith("http"): u="https://"+u
+    d=urlparse(u).netloc.lower()
+    if urlparse(u).scheme!="https": s+=20; logs.append(("🔓 بدون HTTPS","خطير",20))
+    if re.match(r"^\d+\.\d+\.\d+\.\d+", d): s+=35; logs.append(("🌐 IP مباشر",d,35))
+    if any(d.endswith(x) for x in [".tk",".ml",".xyz",".top",".cf"]): s+=18; logs.append(("⚠️ نطاق مجاني",d,18))
+    if "bit.ly" in d or "tinyurl" in d: s+=22; logs.append(("✂️ رابط مختصر","يخفي الوجهة",22))
+    if "@" in u: s+=25; logs.append(("❗ خدعة @","@",25))
+    if any(w in u.lower() for w in ["login","verify","bank"]): s+=12; logs.append(("🎣 كلمات تصيد","login/verify",12))
+    if len(u)>80: s+=8; logs.append(("📏 طويل",f"{len(u)} حرف",8))
+    return min(s,100), logs
 
-st.markdown('<div class="card-dark">', unsafe_allow_html=True)
-input_text = st.text_area("الصق رابط أو رسالة واتساب كاملة", placeholder="مثال: مبروك ربحت! ادخل https://alrajhi-bank-verify.tk/login ...", height=90)
-uploaded = st.file_uploader("أو ارفع صورة QR", type=["png","jpg","jpeg"])
-st.markdown('</div>', unsafe_allow_html=True)
-
-def extract_urls(text):
-    # يطلع كل الروابط من رسالة واتساب
-    return re.findall(r'https?://[^\s]+|www\.[^\s]+|[a-z0-9.-]+\.(?:tk|ml|xyz|top|com|sa)/[^\s]*', text)
-
-def analyze(url):
-    score=0; logs=[]
-    parsed=urlparse(url if url.startswith("http") else "https://"+url)
-    domain=parsed.netloc.lower().replace("www.","")
-    
-    checks = [
-        (parsed.scheme!="https", 20, "🔓 بدون HTTPS", "بدون تشفير", "high"),
-        (bool(re.match(r"^\d+\.\d+\.\d+\.\d+", domain)), 35, "🌐 IP مباشر", domain, "high"),
-        (any(domain.endswith(t) for t in [".tk",".ml",".ga",".cf",".xyz",".top",".gq"]), 18, "⚠️ نطاق مجاني مشبوه", domain, "high"),
-        (domain in ["bit.ly","tinyurl.com","cutt.ly","t.me","is.gd"], 22, "✂️ رابط مختصر", "يخفي الوجهة", "med"),
-        ("@" in url, 25, "❗ خدعة @", "يحاول يخدعك", "high"),
-        (domain.count("-")>=3, 10, "➖ شرطات كثيرة", domain, "med"),
-        (bool([w for w in ["login","verify","secure","bank","account","update","confirm","webscr","alrajhi","stc"] if w in url.lower()]), 15, "🎣 كلمات تصيد", "login/verify/bank", "med"),
-        (len(url)>85, 8, "📏 رابط طويل", f"{len(url)} حرف", "low"),
-    ]
-    for cond, pts, title, val, lvl in checks:
-        if cond:
-            score+=pts; logs.append([title, val, lvl, pts])
-    
-    try:
-        r=requests.head(url if url.startswith("http") else "https://"+url, timeout=3, allow_redirects=True)
-        if len(r.history)>0: score+=8; logs.append(["🔁 إعادة توجيه", f"{len(r.history)} قفزات", "med", 8])
-    except: logs.append(["📡 لا يستجيب", "موقع مؤقت", "info", 0])
-    return min(score,100), logs
-
-if st.button("افحص الآن - فحص شامل 🔍"):
-    if not input_text and not uploaded:
-        st.warning("حط رابط أو رسالة")
+if st.button("افحص الآن 🔍"):
+    target=txt.strip().split()[0] if txt else ""
+    if not target: st.warning("حط رابط")
     else:
-        urls = extract_urls(input_text) if input_text else []
-        if not urls and input_text: urls=[input_text] # اذا رابط واحد
-        if not urls: urls=["https://example.com"] if not uploaded else ["https://uploaded-image-qr.com"]
+        score,logs=check(target)
+        st.session_state.hist.append((target,score))
+        if score>=65: color="#ef4444"; level="خطر مؤكد ⛔"
+        elif score>=35: color="#f59e0b"; level="مشبوه ⚠️"
+        else: color="#22c55e"; level="آمن ✅"
+        st.markdown(f'<div style="background:white; border-radius:16px; padding:20px; text-align:center; border-right:6px solid {color}"><div style="font-size:48px; font-weight:900; color:{color}">{score}%</div><div style="font-weight:800; color:#0B1220">{level}</div><div style="font-size:11px; color:#64748b">{target[:50]}</div></div>', unsafe_allow_html=True)
+        for t,v,p in logs:
+            st.markdown(f'<div class="card" style="display:flex; justify-content:space-between"><span>{t} - {v}</span><b style="color:#f59e0b">+{p}</b></div>', unsafe_allow_html=True)
 
-        for target in urls[:3]: # يفحص أول 3 روابط في الرسالة
-            if not target.startswith("http"): target="https://"+target
-            score, logs = analyze(target)
-            st.session_state.history.append({"url":target, "score":score, "time":datetime.now().strftime("%H:%M")})
-
-            if score>=65: color="#ef4444"; level="خطر مؤكد ⛔"
-            elif score>=35: color="#f59e0b"; level="مشبوه ⚠️"
-            else: color="#22c55e"; level="آمن ✅"
-
-            st.markdown(f'<div class="card-white" style="border-right:6px solid {color}"><div style="display:flex; justify-content:space-between; align-items:center"><div><div style="color:{color}; font-size:32px; font-weight:900">{score}%</div><div style="color:#0f172a; font-weight:800">{level}</div></div><div style="text-align:right; color:#64748b; font-size:11px; max-width:60%">{target[:60]}</div></div></div>', unsafe_allow_html=True)
-            
-            for title, val, lvl, pts in logs:
-                st.markdown(f'<div class="card-dark" style="display:flex; justify-content:space-between"><div><div style="color:white; font-weight:700">{title}</div><div style="color:#64748b; font-size:11px">{val}</div></div><div style="color:{ "#ef4444" if lvl=="high" else "#f59e0b"}; font-weight:800">+{pts}</div></div>', unsafe_allow_html=True)
-
-            report = f"تقرير V9 Ultimate\nالرابط: {target}\nالخطورة: {score}% {level}\n{datetime.now()}\n" + "\n".join([f"- {t}:{v}" for t,v,l,p in logs])
-            st.download_button(f"📄 حمّل تقرير {target[:20]}", report, file_name=f"Kashef_V9_{score}.txt", key=target)
-
-# سجل الفحص
-if st.session_state.history:
-    st.markdown('<div class="card-dark"><div style="color:white; font-weight:700">📜 سجل الفحوصات (وريه للجنة)</div></div>', unsafe_allow_html=True)
-    for h in reversed(st.session_state.history[-5:]):
-        st.markdown(f'<div style="color:#94a3b8; font-size:12px">[{h["time"]}] {h["url"][:40]} - <b style="color:{"#ef4444" if h["score"]>=65 else "#22c55e"}">{h["score"]}%</b></div>', unsafe_allow_html=True)
-
-st.caption("V9 Ultimate Black Edition | صنع في مكة 🕋 | 2026 - جاهز للعرض النهائي")
+st.caption("V9 -> V10 | Black Edition | مكة 2026")
