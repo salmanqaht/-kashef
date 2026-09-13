@@ -1,6 +1,5 @@
 streamlit
-pandas
-pillow
 requests
 python-whois
-tldextract
+qrcode
+pillow
