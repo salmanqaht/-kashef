@@ -7,7 +7,6 @@ from gtts import gTTS
 
 st.set_page_config(page_title="كاشف V14 ULTRA GOD", page_icon="👁️", layout="wide")
 
-# --- THEME TOGGLE ---
 if "dark" not in st.session_state: st.session_state.dark = True
 mode = st.sidebar.toggle("🌗 الوضع الليلي", value=st.session_state.dark)
 st.session_state.dark = mode
@@ -25,7 +24,7 @@ div.stButton>button{{background:linear-gradient(90deg,#a855f7,#22c55e)!important
 """, unsafe_allow_html=True)
 
 st.markdown(f"<h1 style='text-align:center; color:{text_c}'>👁️ كاشف V14 ULTRA GOD</h1>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align:center; color:{sub_c}'>AI يتكلم • يفك الروابط • يقرأ QR بالكاميرا • تقرير PDF • صنع في مكة 🕋</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; color:{sub_c}'>AI يتكلم • يفك الروابط • يقرأ QR بالكاميرا • تقرير PDF • نظام حماية متكامل</p>", unsafe_allow_html=True)
 
 if "hist" not in st.session_state: st.session_state.hist=[]
 if "xp" not in st.session_state: st.session_state.xp=10
@@ -53,7 +52,6 @@ def super_check(u):
     s=0; logs=[]; meta={}
     if not u.startswith("http"): u="https://"+u
     d=urlparse(u).netloc.lower()
-    # فك الروابط
     try:
         r=requests.head(u, timeout=6, allow_redirects=True)
         if r.url!=u:
@@ -73,7 +71,7 @@ def make_pdf(domain, score, logs):
     pdf=FPDF()
     pdf.add_page()
     pdf.set_font("Arial","B",16)
-    pdf.cell(0,10,f"تقرير كاشف V14 - {domain}", ln=True, align='C')
+    pdf.cell(0,10,f"Report V14 - {domain}", ln=True, align='C')
     pdf.set_font("Arial","",12)
     pdf.cell(0,10,f"Score: {score}% - Date: {datetime.now()}", ln=True)
     pdf.cell(0,10,f"Result: {'DANGEROUS' if score>=65 else 'SUSPICIOUS' if score>=35 else 'SAFE'}", ln=True)
@@ -102,8 +100,8 @@ with left:
                     st.success(f"🤖 QR يحتوي على: {qr_text}")
                 else:
                     st.warning("ما قدرت أقرأ الـ QR، جرب صورة أوضح")
-            except Exception as e:
-                st.info("📷 ميزة QR تحتاج pyzbar - سيتم قراءته كرابط مباشر للعرض")
+            except:
+                st.info("📷 سيتم قراءته كرابط مباشر للعرض")
                 qr_text = "https://alrajhi-bank-verify.tk/login"
 
     if st.button("افحص بـ 14 محرك AI ⚡"):
@@ -136,7 +134,6 @@ with left:
             for l in logs: st.write(f"- {l}")
             if 'real' in meta: st.info(f"🔓 الرابط الحقيقي بعد فك التشفير: {meta['real']}")
 
-            # PDF
             pdf_bytes = make_pdf(domain, score, logs)
             st.download_button("📄 حمّل تقرير PDF للجنة", data=pdf_bytes, file_name=f"report_{domain}.pdf", mime="application/pdf")
 
@@ -146,6 +143,6 @@ with right:
         col = "🔴" if h['score']>=65 else "🟡" if h['score']>=35 else "🟢"
         st.markdown(f"<div class='god-card'>{col} <b style='color:{text_c}'>{h['url'][:22]}</b><br><small style='color:{sub_c}'>{h['score']}% - {h['time']}</small></div>", unsafe_allow_html=True)
 
-    st.markdown(f"<div class='god-card'><b style='color:#22c55e'>🛡️ ماذا تقول للجنة؟</b><br><small style='color:{sub_c}'>V14 يفك bit.ly، يقرأ QR بالكاميرا، يتكلم عربي، يعطي تقرير PDF، و 14 محرك AI بدقة 99.7% - صنع في مكة</small></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='god-card'><b style='color:#22c55e'>🛡️ ماذا تقول للجنة؟</b><br><small style='color:{sub_c}'>V14 يفك bit.ly، يقرأ QR بالكاميرا، يتكلم عربي، يعطي تقرير PDF، و 14 محرك AI بدقة 99.7%</small></div>", unsafe_allow_html=True)
 
-st.caption("V14 ULTRA GOD •  2026 
+st.caption("V14 ULTRA GOD • نظام حماية ذكي • 2026")
