@@ -1,9 +1,8 @@
 streamlit
 requests
 pillow
-qrcode[pil]
 fpdf2
 gTTS
-pyzbar
 pandas
 plotly
+pyzbar
