@@ -1,5 +1,7 @@
 streamlit
 requests
-python-whois
-qrcode
 pillow
+qrcode[pil]
+fpdf2
+gTTS
+pyzbar
