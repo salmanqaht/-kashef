@@ -148,4 +148,4 @@ with right:
 
     st.markdown(f"<div class='god-card'><b style='color:#22c55e'>🛡️ ماذا تقول للجنة؟</b><br><small style='color:{sub_c}'>V14 يفك bit.ly، يقرأ QR بالكاميرا، يتكلم عربي، يعطي تقرير PDF، و 14 محرك AI بدقة 99.7% - صنع في مكة</small></div>", unsafe_allow_html=True)
 
-st.caption("V14 ULTRA GOD • صنع في مكة 2026 • لا يُهزم")
+st.caption("V14 ULTRA GOD •  2026 
